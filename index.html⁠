@@ -205,10 +205,10 @@
                     output.innerText = data.result;
                     copyBtn.style.display = 'block';
                 } else {
-                    output.innerText = "Hata: " + (data.error || "İşlem tamamlanamadı.");
+                    output.innerText = "Hata (" + response.status + "): " + (data.error || "İşlem tamamlanamadı.");
                 }
             } catch (err) {
-                output.innerText = "Bir bağlantı hatası oluştu. Lütfen tekrar deneyin.";
+                output.innerText = "Bağlantı Hatası: " + err.message;
             } finally {
                 submitBtn.disabled = false;
             }
