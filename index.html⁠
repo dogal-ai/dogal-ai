@@ -106,8 +106,9 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .main-btn:active {
-            transform: scale(0.98);
+        .main-btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
         }
         .output-box {
             margin-top: 20px;
@@ -149,19 +150,19 @@
         <textarea id="inputText" placeholder="Yapay zeka tarafından yazılan metni buraya yapıştırın..."></textarea>
         
         <div class="tones">
-            <button class="tone-btn active" onclick="selectTone(this, 'Samimi')">Samimi</button>
-            <button class="tone-btn" onclick="selectTone(this, 'Kurumsal')">Kurumsal</button>
-            <button class="tone-btn" onclick="selectTone(this, 'Sosyal')">Sosyal Media</button>
+            <button class="tone-btn active" onclick="selectTone(this, 'Samimi ve Doğal')">Samimi</button>
+            <button class="tone-btn" onclick="selectTone(this, 'Kurumsal ve Saygın')">Kurumsal</button>
+            <button class="tone-btn" onclick="selectTone(this, 'Sosyal Medya Dili')">Sosyal Media</button>
         </div>
 
-        <button class="main-btn" onclick="humanizeText()">İnsanileştir ✨</button>
+        <button class="main-btn" id="submitBtn" onclick="humanizeText()">İnsanileştir ✨</button>
 
         <div class="output-box" id="outputText">İnsanileştirilmiş metin burada görünecektir...</div>
         <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">Metni Kopyala 📋</button>
     </div>
 
     <script>
-        let currentTone = 'Samimi';
+        let currentTone = 'Samimi ve Doğal';
 
         function selectTone(btn, tone) {
             document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
@@ -175,10 +176,11 @@
             document.getElementById('copyBtn').style.display = 'none';
         }
 
-        function humanizeText() {
+        async function humanizeText() {
             const input = document.getElementById('inputText').value;
             const output = document.getElementById('outputText');
             const copyBtn = document.getElementById('copyBtn');
+            const submitBtn = document.getElementById('submitBtn');
             
             if(!input.trim()) {
                 output.innerText = "Lütfen önce bir metin girin!";
@@ -186,12 +188,30 @@
                 return;
             }
 
-            output.innerText = "Metin dönüştürülüyor...";
+            output.innerText = "Yapay zeka metni doğallaştırıyor, lütfen bekleyin...";
+            submitBtn.disabled = true;
+            copyBtn.style.display = 'none';
             
-            setTimeout(() => {
-                output.innerText = input + " (" + currentTone + " tonda doğal ve akıcı bir dile dönüştürüldü!)";
-                copyBtn.style.display = 'block';
-            }, 800);
+            try {
+                const response = await fetch('/api/humanize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: input, tone: currentTone })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    output.innerText = data.result;
+                    copyBtn.style.display = 'block';
+                } else {
+                    output.innerText = "Hata: " + (data.error || "İşlem tamamlanamadı.");
+                }
+            } catch (err) {
+                output.innerText = "Bir bağlantı hatası oluştu. Lütfen tekrar deneyin.";
+            } finally {
+                submitBtn.disabled = false;
+            }
         }
 
         function copyToClipboard() {
