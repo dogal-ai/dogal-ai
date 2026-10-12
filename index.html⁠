@@ -41,6 +41,23 @@
             color: #94a3b8;
             margin-bottom: 20px;
         }
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .input-header label {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 12px;
+            cursor: pointer;
+        }
         textarea {
             width: 100%;
             height: 120px;
@@ -64,13 +81,14 @@
         }
         .tone-btn {
             flex: 1;
-            padding: 8px;
+            padding: 10px;
             background: #334155;
             border: none;
             border-radius: 6px;
             color: #fff;
             font-size: 13px;
             cursor: pointer;
+            transition: 0.2s;
         }
         .tone-btn.active {
             background: #0284c7;
@@ -86,6 +104,7 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
         }
         .main-btn:active {
             transform: scale(0.98);
@@ -99,6 +118,21 @@
             min-height: 80px;
             font-size: 14px;
             color: #cbd5e1;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .copy-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
         }
     </style>
 </head>
@@ -108,41 +142,67 @@
         <h1>dogal-ai</h1>
         <p class="subtitle">Yapay zeka metinlerini %100 doğal ve insani hale getirin.</p>
         
+        <div class="input-header">
+            <label for="inputText">Girdi Metni</label>
+            <button class="clear-btn" onclick="clearText()">Temizle</button>
+        </div>
         <textarea id="inputText" placeholder="Yapay zeka tarafından yazılan metni buraya yapıştırın..."></textarea>
         
         <div class="tones">
-            <button class="tone-btn active" onclick="selectTone(this)">Samimi</button>
-            <button class="tone-btn" onclick="selectTone(this)">Kurumsal</button>
-            <button class="tone-btn" onclick="selectTone(this)">Sosyal</button>
+            <button class="tone-btn active" onclick="selectTone(this, 'Samimi')">Samimi</button>
+            <button class="tone-btn" onclick="selectTone(this, 'Kurumsal')">Kurumsal</button>
+            <button class="tone-btn" onclick="selectTone(this, 'Sosyal')">Sosyal Media</button>
         </div>
 
         <button class="main-btn" onclick="humanizeText()">İnsanileştir ✨</button>
 
-        <div class="output-box" id="outputText">
-            İnsanileştirilmiş metin burada görünecektir...
-        </div>
+        <div class="output-box" id="outputText">İnsanileştirilmiş metin burada görünecektir...</div>
+        <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">Metni Kopyala 📋</button>
     </div>
 
     <script>
-        function selectTone(btn) {
+        let currentTone = 'Samimi';
+
+        function selectTone(btn, tone) {
             document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            currentTone = tone;
+        }
+
+        function clearText() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').innerText = 'İnsanileştirilmiş metin burada görünecektir...';
+            document.getElementById('copyBtn').style.display = 'none';
         }
 
         function humanizeText() {
             const input = document.getElementById('inputText').value;
             const output = document.getElementById('outputText');
+            const copyBtn = document.getElementById('copyBtn');
             
             if(!input.trim()) {
                 output.innerText = "Lütfen önce bir metin girin!";
+                copyBtn.style.display = 'none';
                 return;
             }
 
             output.innerText = "Metin dönüştürülüyor...";
             
             setTimeout(() => {
-                output.innerText = input + " (Doğal ve akıcı bir dile dönüştürüldü!)";
-            }, 1000);
+                output.innerText = input + " (" + currentTone + " tonda doğal ve akıcı bir dile dönüştürüldü!)";
+                copyBtn.style.display = 'block';
+            }, 800);
+        }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById('outputText').innerText;
+            navigator.clipboard.writeText(outputText).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerText = "Kopyalandı! ✅";
+                setTimeout(() => {
+                    btn.innerText = "Metni Kopyala 📋";
+                }, 2000);
+            });
         }
     </script>
 </body>
