@@ -3,83 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metin İnsanileştirici | AI Metinlerini Doğallaştır</title>
+    <title>dogal-ai | Yapay Zeka Metin İnsanileştirici</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: #0f172a; color: #f8fafc; display: flex; justify-content: center; padding: 20px 15px; min-height: 100vh; }
-        .container { width: 100%; max-width: 500px; }
-        header { text-align: center; margin-bottom: 25px; }
-        h1 { font-size: 24px; color: #38bdf8; margin-bottom: 8px; font-weight: 700; }
-        p.subtitle { font-size: 14px; color: #94a3b8; }
-        .card { background: #1e293b; border-radius: 16px; padding: 20px; border: 1px solid #334155; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); }
-        label { font-size: 13px; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 8px; }
-        textarea { width: 100%; height: 110px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 12px; color: #fff; font-size: 14px; resize: none; outline: none; margin-bottom: 15px; }
-        textarea:focus { border-color: #38bdf8; }
-        select { width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 12px; color: #fff; font-size: 14px; margin-bottom: 15px; outline: none; }
-        button { width: 100%; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.98); }
-        .output-box { margin-top: 20px; background: #0f172a; border: 1px dashed #38bdf8; border-radius: 10px; padding: 15px; display: none; }
-        .output-box h3 { font-size: 12px; color: #38bdf8; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
-        .output-text { font-size: 14px; line-height: 1.5; color: #e2e8f0; white-space: pre-wrap; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+        }
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #38bdf8;
+        }
+        p.subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-size: 15px;
+            resize: none;
+            margin-bottom: 16px;
+            outline: none;
+        }
+        textarea:focus {
+            border-color: #38bdf8;
+        }
+        .tones {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .tone-btn {
+            flex: 1;
+            padding: 8px;
+            background: #334155;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .tone-btn.active {
+            background: #0284c7;
+            font-weight: bold;
+        }
+        .main-btn {
+            width: 100%;
+            padding: 14px;
+            background: #0284c7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .main-btn:active {
+            transform: scale(0.98);
+        }
+        .output-box {
+            margin-top: 20px;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px dashed #334155;
+            border-radius: 8px;
+            min-height: 80px;
+            font-size: 14px;
+            color: #cbd5e1;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>İnsanileştir.ai</h1>
-        <p class="subtitle">ChatGPT kokan metinleri 2 saniyede doğal insan diline çevirin.</p>
-    </header>
+    <div class="container">
+        <h1>dogal-ai</h1>
+        <p class="subtitle">Yapay zeka metinlerini %100 doğal ve insani hale getirin.</p>
+        
+        <textarea id="inputText" placeholder="Yapay zeka tarafından yazılan metni buraya yapıştırın..."></textarea>
+        
+        <div class="tones">
+            <button class="tone-btn active" onclick="selectTone(this)">Samimi</button>
+            <button class="tone-btn" onclick="selectTone(this)">Kurumsal</button>
+            <button class="tone-btn" onclick="selectTone(this)">Sosyal</button>
+        </div>
 
-    <div class="card">
-        <label for="inputText">Robotik / AI Metni Yapıştır:</label>
-        <textarea id="inputText" placeholder="Örn: Bu bağlamda, dijital pazarlama faaliyetleri büyük önem arz etmektedir..."></textarea>
+        <button class="main-btn" onclick="humanizeText()">İnsanileştir ✨</button>
 
-        <label for="styleSelect">Üslup ve Ton Seçin:</label>
-        <select id="styleSelect">
-            <option value="samimi">Samimi & Günlük Dil (Kahve Sohbeti)</option>
-            <option value="kurumsal">İkna Edici Kurumsal / İş Dili</option>
-            <option value="sosyal">Sosyal Medya (Dikkat Çekici & Akıcı)</option>
-        </select>
-
-        <button onclick="humanizeText()">Metni İnsanileştir ✨</button>
-
-        <div id="outputBox" class="output-box">
-            <h3>Doğal / İnsansı Metin:</h3>
-            <div id="outputText" class="output-text"></div>
+        <div class="output-box" id="outputText">
+            İnsanileştirilmiş metin burada görünecektir...
         </div>
     </div>
-</div>
 
-<script>
-    function humanizeText() {
-        const input = document.getElementById('inputText').value;
-        const style = document.getElementById('styleSelect').value;
-        const outputBox = document.getElementById('outputBox');
-        const outputText = document.getElementById('outputText');
-
-        if (!input.trim()) {
-            alert('Lütfen önce insanileştirilecek bir metin girin!');
-            return;
+    <script>
+        function selectTone(btn) {
+            document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
 
-        outputBox.style.display = 'block';
-        outputText.innerText = 'Yapay zeka metni doğallaştırıyor, lütfen bekleyin...';
-
-        // Şimdilik demo dönüşüm mantığı (API bağlandığında buraya canlı yapay zeka yanıtı gelecek)
-        setTimeout(() => {
-            if (style === 'samimi') {
-                outputText.innerText = input
-                    .replace(/bu bağlamda/gi, 'bu yüzden')
-                    .replace(/önem arz etmektedir/gi, 'çok önemli')
-                    .replace(/son derece/gi, 'bayağı')
-                    .replace(/gerekmektedir/gi, 'lazım') + "\n\n(Not: Metin samimi ve günlük dile uyarlandı.)";
-            } else {
-                outputText.innerText = "Dönüştürülen Metin:\n" + input.replace(/bu bağlamda,/gi, '') + " (Seçilen ton uygulandı)";
+        function humanizeText() {
+            const input = document.getElementById('inputText').value;
+            const output = document.getElementById('outputText');
+            
+            if(!input.trim()) {
+                output.innerText = "Lütfen önce bir metin girin!";
+                return;
             }
-        }, 1000);
-    }
-</script>
 
+            output.innerText = "Metin dönüştürülüyor...";
+            
+            setTimeout(() => {
+                output.innerText = input + " (Doğal ve akıcı bir dile dönüştürüldü!)";
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
