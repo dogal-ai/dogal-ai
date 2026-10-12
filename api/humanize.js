@@ -6,22 +6,23 @@ export default async function handler(req, res) {
   const { text, tone } = req.body;
 
   if (!text) {
-    return res.status(400).json({ error: 'Metin boş olamaz.' });
+    return res.status(400).json({ error: 'Lütfen dönüştürülecek bir metin girin.' });
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'API anahtarı Vercel üzerinde tanımlanmamış.' });
+    return res.status(500).json({ error: 'Vercel üzerinde GEMINI_API_KEY tanımlı değil.' });
   }
 
-  const systemPrompt = `Sen profesyonel bir metin insanileştiricisin. Yapay zeka tarafından üretilmiş metinleri alıp, tıpkı doğal bir insanın yazacağı şekilde akıcı, samimi ve anlaşılır hale getiriyorsun.
+  const systemPrompt = `Sen metin insanileştirme konusunda uzmanlaşmış profesyonel bir editörsün. Yapay zeka tarafından üretilmiş, resmi, kalıplaşmış veya robotik metinleri alır ve tam anlamıyla doğal bir insanın elinden çıkmış gibi akıcı, samimi ve kaliteli bir dile dönüştürürsün.
 
-Gelen metni "${tone}" tonda yeniden yaz. 
+Aşağıdaki metni "${tone}" bir anlatım tarzıyla yeniden yaz.
 Kurallar:
-- Yapay zeka kalıplarından, resmi ve robotik ifadelerden kaçın.
-- Anlamı koru ancak metni doğal bir insan üslubuna kavuştur.
-- Sadece dönüştürülmüş metni ver, açıklama veya başlık ekleme.`;
+- Yapay zeka kalıplarını (örn. "Sonuç olarak", "Özetle", "Gelişen dünyada", "Göz önüne alındığında" vb.) tamamen kaldır.
+- Metnin ana fikrini ve doğruluğunu koru.
+- Doğal paragraf geçişleri ve akıcı cümleler kullan.
+- Sadece dönüştürülen metni yanıt olarak ver. Başlık, açıklama veya "İşte metniniz:" gibi ek sözler ekleme.`;
 
   try {
     const response = await fetch(
@@ -33,7 +34,7 @@ Kurallar:
           contents: [
             {
               role: 'user',
-              parts: [{ text: `${systemPrompt}\n\nDönüştürülecek Metin:\n${text}` }]
+              parts: [{ text: `${systemPrompt}\n\nİnsanileştirilecek Metin:\n${text}` }]
             }
           ]
         })
@@ -43,13 +44,13 @@ Kurallar:
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error?.message || 'API Hatası');
+      throw new Error(data.error?.message || 'API Hatası oluştu.');
     }
 
     const humanizedText = data.candidates[0].content.parts[0].text;
     return res.status(200).json({ result: humanizedText });
 
   } catch (error) {
-    return res.status(500).json({ error: 'İnsanileştirme sırasında bir hata oluştu: ' + error.message });
+    return res.status(500).json({ error: 'İşlem sırasında bir hata oluştu: ' + error.message });
   }
 }
